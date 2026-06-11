@@ -650,6 +650,12 @@
     let verifyExpires = 0;
     let sessionCheckInterval = null;
 
+    function getAdminPass() {
+      let p = localStorage.getItem(ADMIN_PASS_KEY);
+      if (!p) { p = Math.random().toString(36).slice(2,10); localStorage.setItem(ADMIN_PASS_KEY, p); }
+      return p;
+    }
+
     emailjs.init(''); // will be set from settings
 
     // ── Login Attempts ──
@@ -1087,20 +1093,31 @@
         document.getElementById('passChangeStatus').textContent = '⚠️ كلمة المرور الجديدة يجب أن تختلف عن الحالية';
         return;
       }
-      document.getElementById('passChangeStatus').textContent = '⏳ جاري إرسال رمز التأكيد...';
 
-      // Generate 6-digit code
-      verifyCodeValue = Math.floor(100000 + Math.random() * 900000).toString();
-      verifyExpires = Date.now() + 5 * 60 * 1000;
-
-      sendCodeEmail(verifyCodeValue).then(() => {
-        document.getElementById('passChangeStatus').textContent = '✅ تم إرسال الرمز إلى بريدك';
-        showVerifyModal();
-        startVerifyTimer();
-      }).catch(err => {
-        document.getElementById('passChangeStatus').textContent = '❌ فشل الإرسال: ' + (typeof err === 'string' ? err : err.text || 'خطأ');
-        verifyCodeValue = null;
-      });
+      // Try to send email code; if EmailJS not configured, change directly
+      const cfg = getEmailConfig();
+      if (cfg.service && cfg.template && cfg.key && cfg.email) {
+        document.getElementById('passChangeStatus').textContent = '⏳ جاري إرسال رمز التأكيد...';
+        verifyCodeValue = Math.floor(100000 + Math.random() * 900000).toString();
+        verifyExpires = Date.now() + 5 * 60 * 1000;
+        sendCodeEmail(verifyCodeValue).then(() => {
+          document.getElementById('passChangeStatus').textContent = '✅ تم إرسال الرمز إلى بريدك';
+          showVerifyModal();
+          startVerifyTimer();
+        }).catch(err => {
+          document.getElementById('passChangeStatus').textContent = '❌ فشل الإرسال: ' + (typeof err === 'string' ? err : err.text || 'خطأ');
+          adminToast('❌ ' + (typeof err === 'string' ? err : err.text || 'فشل الإرسال'));
+          verifyCodeValue = null;
+        });
+      } else {
+        // No EmailJS — change password directly
+        localStorage.setItem(ADMIN_PASS_KEY, newPass);
+        document.getElementById('currentPassDisplay').textContent = '••••••••';
+        document.getElementById('set-password').value = '';
+        document.getElementById('passChangeStatus').textContent = '✅ تم تغيير كلمة المرور بنجاح';
+        logSecurity('تغيير كلمة مرور لوحة التحكم', 'pass');
+        adminToast('🔐 تم تغيير كلمة المرور بنجاح');
+      }
     }
 
     function showVerifyModal() {
