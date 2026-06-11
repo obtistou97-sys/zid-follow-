@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZidFollow — لوحة التحكم</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0f0f1a;
+      --bg2: #16162a;
+      --bg3: #1e1e38;
+      --sidebar: #12122a;
+      --text: #ffffff;
+      --text2: rgba(255,255,255,0.6);
+      --blue: #9BABFA;
+      --blue-deep: #6B7BD0;
+      --red: #F70F36;
+      --border: rgba(255,255,255,0.08);
+      --radius: 12px;
+    }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ── Login Screen ── */
+    #loginScreen {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #loginScreen.hidden { display: none; }
+    .login-box {
+      background: var(--bg2); padding: 3rem 2.5rem; border-radius: 20px;
+      border: 1px solid var(--border); max-width: 380px; width: 90%;
+      text-align: center;
+    }
+    .login-box h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    .login-box p { color: var(--text2); font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .login-box input {
+      width: 100%; padding: 0.8rem 1rem; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: #fff; font-size: 1rem; font-family: inherit;
+      text-align: center; margin-bottom: 1rem;
+    }
+    .login-box input:focus { outline: none; border-color: var(--blue); }
+    .login-box button {
+      width: 100%; padding: 0.8rem; border: none; border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+      color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: transform 0.2s;
+    }
+    .login-box button:hover { transform: translateY(-2px); }
+    .login-error { color: var(--red); font-size: 0.8rem; margin-top: 0.5rem; display: none; }
+    .login-lockout { color: var(--red); font-size: 0.8rem; margin-top: 0.5rem; display: none; }
+    .login-attempts { color: var(--text2); font-size: 0.7rem; margin-top: 0.25rem; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px; background: var(--sidebar); padding: 1.5rem 0;
+      height: 100vh; position: sticky; top: 0;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .sidebar-logo {
+      font-size: 1.2rem; font-weight: 900; text-align: center;
+      padding: 0 1.5rem 1.5rem; border-bottom: 1px solid var(--border);
+      color: var(--blue); letter-spacing: 1px;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 1.5rem; color: var(--text2); text-decoration: none;
+      font-size: 0.9rem; font-weight: 600; transition: all 0.2s;
+      border-right: 3px solid transparent;
+    }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .sidebar-nav a.active {
+      background: rgba(155,171,250,0.1); color: var(--blue);
+      border-right-color: var(--blue);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.5rem; border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .sidebar-footer a {
+      color: var(--text2); text-decoration: none; font-size: 0.8rem;
+      transition: color 0.2s;
+    }
+    .sidebar-footer a:hover { color: var(--blue); }
+
+    /* ── Main Content ── */
+    .main {
+      flex: 1; padding: 2rem; overflow-y: auto; min-height: 100vh;
+    }
+    .page-title {
+      font-size: 1.5rem; font-weight: 900; margin-bottom: 0.25rem;
+    }
+    .page-subtitle {
+      color: var(--text2); font-size: 0.85rem; margin-bottom: 1.5rem;
+    }
+    .section-card {
+      background: var(--bg2); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-card h3 {
+      font-size: 1rem; font-weight: 700; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      display: block; font-size: 0.78rem; color: var(--text2); margin-bottom: 0.35rem; font-weight: 600;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%; padding: 0.7rem 0.9rem; border-radius: 8px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: #fff; font-family: inherit; font-size: 0.85rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus { outline: none; border-color: var(--blue); }
+    .form-group textarea { resize: vertical; min-height: 70px; }
+
+    .btn {
+      padding: 0.7rem 1.5rem; border: none; border-radius: 8px;
+      font-weight: 700; cursor: pointer; font-family: inherit;
+      font-size: 0.9rem; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--blue), var(--blue-deep)); color: #fff; }
+    .btn-danger { background: var(--red); color: #fff; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--bg2); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 1.25rem; text-align: center;
+    }
+    .stat-card .num { font-size: 2rem; font-weight: 900; color: var(--blue); }
+    .stat-card .label { font-size: 0.8rem; color: var(--text2); margin-top: 0.25rem; }
+
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      background: var(--bg2); color: #fff; padding: 0.75rem 2rem; border-radius: 50px;
+      font-size: 0.9rem; z-index: 9999; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    .verify-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9998;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .verify-overlay.show { display: flex; }
+    .verify-box {
+      background: var(--bg2); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 2rem; max-width: 400px; width: 90%;
+      text-align: center;
+    }
+    .verify-box h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .verify-box p { color: var(--text2); font-size: 0.85rem; margin-bottom: 1.25rem; }
+    .verify-box .code-inputs { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.25rem; }
+    .verify-box .code-inputs input {
+      width: 45px; height: 50px; text-align: center; font-size: 1.3rem; font-weight: 700;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      color: #fff; font-family: inherit;
+    }
+    .verify-box .code-inputs input:focus { outline: none; border-color: var(--blue); }
+    .verify-box .code-timer { font-size: 0.75rem; color: var(--text2); margin-bottom: 1rem; }
+    .verify-box .btn-group { display: flex; gap: 0.75rem; }
+    .verify-box .btn-group button { flex: 1; }
+    .sec-log-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem;
+    }
+    .sec-log-item:last-child { border-bottom: none; }
+    .sec-log-item .time { color: var(--text2); font-size: 0.7rem; }
+    .sec-log-item .event { color: var(--text); }
+    .sec-log-item .event .badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.65rem; margin-left: 0.4rem; }
+    .badge-login { background: rgba(155,171,250,0.2); color: var(--blue); }
+    .badge-pass { background: rgba(247,15,54,0.2); color: var(--red); }
+    .badge-edit { background: rgba(250,234,155,0.2); color: #FAEA9B; }
+
+    .empty-state { text-align: center; padding: 3rem; color: var(--text2); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .order-item {
+      background: var(--bg3); border-radius: 8px; padding: 1rem;
+      margin-bottom: 0.75rem; border: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .order-item .label { color: var(--text2); font-size: 0.75rem; }
+    .order-item .val { color: var(--text); font-weight: 600; }
+    .order-item .badge {
+      display: inline-block; padding: 0.2rem 0.5rem; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 700;
+    }
+    .badge-new { background: rgba(155,171,250,0.2); color: var(--blue); }
+
+    .faq-grid { display: grid; gap: 1rem; }
+    .faq-edit-item {
+      background: var(--bg3); border-radius: 8px; padding: 1rem;
+      border: 1px solid var(--border);
+    }
+    .faq-edit-item .q-row { display: flex; gap: 0.75rem; margin-bottom: 0.5rem; }
+    .faq-edit-item .q-row input { flex: 1; }
+    .faq-edit-item .a-row input { width: 100%; }
+
+    .mobile-header { display: none; }
+    .hamburger {
+      display: none; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px;
+    }
+    .hamburger span {
+      width: 22px; height: 2px; background: var(--text); border-radius: 2px;
+      transition: 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; position: fixed; z-index: 100; width: 260px; }
+      .sidebar.open { display: flex; }
+      .main { padding: 1rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .mobile-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0.75rem 1rem; background: var(--bg2);
+        border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 99;
+      }
+      .hamburger { display: flex; }
+      .mobile-header .logo { font-weight: 900; color: var(--blue); font-size: 1rem; }
+      body { flex-direction: column; }
+      .order-item { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Screen -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <h1>🔐 ZidFollow</h1>
+      <p>لوحة التحكم — يرجى إدخال كلمة المرور</p>
+      <input type="password" id="loginPass" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')checkLogin()">
+      <button onclick="checkLogin()">دخول</button>
+      <div class="login-error" id="loginError">كلمة المرور غير صحيحة</div>
+      <div class="login-lockout" id="loginLockout">تم قفل الدخول مؤقتاً. حاول بعد 15 دقيقة.</div>
+      <div class="login-attempts" id="loginAttempts"></div>
+    </div>
+  </div>
+
+  <!-- Verify Code Modal -->
+  <div class="verify-overlay" id="verifyOverlay">
+    <div class="verify-box">
+      <h3>🔐 تأكيد تغيير كلمة المرور</h3>
+      <p>تم إرسال رمز التأكيد إلى بريدك الإلكتروني</p>
+      <div class="code-inputs" id="codeInputs">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      </div>
+      <div class="code-timer" id="codeTimer">ينتهي الكود بعد 05:00</div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="verifyCode()">تأكيد</button>
+        <button class="btn btn-outline" onclick="closeVerify()">إلغاء</button>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text2);margin-top:1rem" id="verifyError"></p>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">⚙ ZidFollow Admin</div>
+    <nav class="sidebar-nav">
+      <a href="#" class="active" data-page="dashboard">📊 لوحة المعلومات</a>
+      <a href="#" data-page="hero">🎯 القسم الرئيسي</a>
+      <a href="#" data-page="content">📄 المحتوى</a>
+      <a href="#" data-page="whyw">💡 لماذا نحن</a>
+      <a href="#" data-page="faq">❓ الأسئلة</a>
+      <a href="#" data-page="orders">📦 الطلبات</a>
+      <a href="#" data-page="settings">⚙ الإعدادات</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="index.html" target="_blank">🔗 فتح الموقع</a>
+    </div>
+  </aside>
+
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <div class="logo">⚙ ZidFollow</div>
+    <div class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Dashboard -->
+    <div class="page" id="page-dashboard">
+      <h2 class="page-title">📊 لوحة المعلومات</h2>
+      <p class="page-subtitle">نظرة عامة على الموقع والإحصائيات</p>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="num" id="dash-orders">0</div><div class="label">إجمالي الطلبات</div></div>
+        <div class="stat-card"><div class="num" id="dash-today">0</div><div class="label">طلبات اليوم</div></div>
+        <div class="stat-card"><div class="num">⭐</div><div class="label">آخر تعديل للمحتوى</div></div>
+      </div>
+      <div class="section-card">
+        <h3>🔗 روابط سريعة</h3>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="switchPage('hero')">تعديل القسم الرئيسي</button>
+          <button class="btn btn-primary btn-sm" onclick="switchPage('content')">تعديل المحتوى</button>
+          <button class="btn btn-primary btn-sm" onclick="switchPage('whyw')">تعديل لماذا نحن</button>
+          <button class="btn btn-primary btn-sm" onclick="switchPage('faq')">تعديل الأسئلة</button>
+          <button class="btn btn-primary btn-sm" onclick="switchPage('settings')">الإعدادات</button>
+          <button class="btn btn-outline btn-sm" onclick="window.open('index.html','_blank')">معاينة الموقع</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="page" id="page-hero" style="display:none">
+      <h2 class="page-title">🎯 القسم الرئيسي</h2>
+      <p class="page-subtitle">تعديل عناوين الهيرو والإحصائيات</p>
+      <div class="section-card">
+        <h3>📝 العناوين</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>السطر الأول (عربي)</label><input id="hero1-ar" placeholder="زيد متابعين صفحة Facebook"></div>
+          <div class="form-group"><label>Première ligne (FR)</label><input id="hero1-fr" placeholder="Augmentez vos abonnés Facebook"></div>
+          <div class="form-group"><label>السطر الثاني (عربي)</label><input id="hero2-ar" placeholder="وقوّي حضورك على Instagram"></div>
+          <div class="form-group"><label>Deuxième ligne (FR)</label><input id="hero2-fr" placeholder="et renforcez votre présence sur Instagram"></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <h3>📊 الإحصائيات</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>العملاء (عربي)</label><input id="stat-clients" placeholder="1250+"></div>
+          <div class="form-group"><label>Clients (FR)</label><input id="stat-clients-fr" placeholder="1250+"></div>
+          <div class="form-group"><label>المتابعون (عربي)</label><input id="stat-followers" placeholder="862k"></div>
+          <div class="form-group"><label>Abonnés (FR)</label><input id="stat-followers-fr" placeholder="862k"></div>
+          <div class="form-group"><label>التقييم (عربي)</label><input id="stat-rating" placeholder="⭐ 3.9"></div>
+          <div class="form-group"><label>Note (FR)</label><input id="stat-rating-fr" placeholder="⭐ 3.9"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveHero()">💾 حفظ التعديلات</button>
+    </div>
+
+    <!-- Content -->
+    <div class="page" id="page-content" style="display:none">
+      <h2 class="page-title">📄 المحتوى</h2>
+      <p class="page-subtitle">تعديل جميع نصوص الموقع</p>
+
+      <div class="section-card">
+        <h3>🛵 قسم الخدمات</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>العنوان (عربي)</label><input id="services-tag-ar" placeholder="خدماتنا"></div>
+          <div class="form-group"><label>Titre (FR)</label><input id="services-tag-fr" placeholder="Nos Services"></div>
+          <div class="form-group"><label>اللقب (عربي)</label><input id="services-title-ar" placeholder="الأكثر طلباً"></div>
+          <div class="form-group"><label>Sous-titre (FR)</label><input id="services-title-fr" placeholder="Les plus demandés"></div>
+          <div class="form-group" style="grid-column:1/-1"><label>الوصف (عربي)</label><textarea id="services-desc-ar" rows="2" placeholder="متابعون حقيقيون لجميع المنصات بأسعار منافسة"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Description (FR)</label><textarea id="services-desc-fr" rows="2" placeholder="Vrais abonnés pour toutes les plateformes à prix compétitifs"></textarea></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🏷️ أسماء الخدمات</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>الخدمة 1 (عربي)</label><input id="svc-name1-ar" placeholder="متابعين إنستاغرام"></div>
+          <div class="form-group"><label>Service 1 (FR)</label><input id="svc-name1-fr" placeholder="Abonnés Instagram"></div>
+          <div class="form-group"><label>الخدمة 2 (عربي)</label><input id="svc-name2-ar" placeholder="إعجابات إنستاغرام"></div>
+          <div class="form-group"><label>Service 2 (FR)</label><input id="svc-name2-fr" placeholder="Likes Instagram"></div>
+          <div class="form-group"><label>الخدمة 3 (عربي)</label><input id="svc-name3-ar" placeholder="متابعين الصفحة"></div>
+          <div class="form-group"><label>Service 3 (FR)</label><input id="svc-name3-fr" placeholder="Abonnés Page Facebook"></div>
+          <div class="form-group"><label>الخدمة 4 (عربي)</label><input id="svc-name4-ar" placeholder="إعجابات الصفحة"></div>
+          <div class="form-group"><label>Service 4 (FR)</label><input id="svc-name4-fr" placeholder="Likes Page Facebook"></div>
+          <div class="form-group"><label>الخدمة 5 (عربي)</label><input id="svc-name5-ar" placeholder="مشاهدات تيكتوك"></div>
+          <div class="form-group"><label>Service 5 (FR)</label><input id="svc-name5-fr" placeholder="Vues TikTok"></div>
+          <div class="form-group"><label>الخدمة 6 (عربي)</label><input id="svc-name6-ar" placeholder="إعجابات الفيديو"></div>
+          <div class="form-group"><label>Service 6 (FR)</label><input id="svc-name6-fr" placeholder="Likes Vidéo"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>📝 قسم الطلب</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>العنوان (عربي)</label><input id="order-tag-ar" placeholder="الطلب"></div>
+          <div class="form-group"><label>Titre (FR)</label><input id="order-tag-fr" placeholder="Commander"></div>
+          <div class="form-group"><label>اللقب (عربي)</label><input id="order-title-ar" placeholder="اطلب الآن"></div>
+          <div class="form-group"><label>Sous-titre (FR)</label><input id="order-title-fr" placeholder="Commandez"></div>
+          <div class="form-group" style="grid-column:1/-1"><label>الوصف (عربي)</label><textarea id="order-desc-ar" rows="2" placeholder="سهل وسريع — بدون تسجيل، بدون بطاقة"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Description (FR)</label><textarea id="order-desc-fr" rows="2" placeholder="Simple et rapide — sans inscription, sans carte"></textarea></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>📋 خيارات الطلب</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>الخيار 1 (عربي)</label><input id="form-opt1-ar" placeholder="متابعين إنستاغرام"></div>
+          <div class="form-group"><label>Option 1 (FR)</label><input id="form-opt1-fr" placeholder="Abonnés Insta"></div>
+          <div class="form-group"><label>الخيار 2 (عربي)</label><input id="form-opt2-ar" placeholder="إعجابات إنستاغرام"></div>
+          <div class="form-group"><label>Option 2 (FR)</label><input id="form-opt2-fr" placeholder="Likes Instagram"></div>
+          <div class="form-group"><label>الخيار 3 (عربي)</label><input id="form-opt3-ar" placeholder="متابعين الصفحة"></div>
+          <div class="form-group"><label>Option 3 (FR)</label><input id="form-opt3-fr" placeholder="Abonnés Facebook"></div>
+          <div class="form-group"><label>الخيار 4 (عربي)</label><input id="form-opt4-ar" placeholder="إعجابات الصفحة"></div>
+          <div class="form-group"><label>Option 4 (FR)</label><input id="form-opt4-fr" placeholder="Likes Page Facebook"></div>
+          <div class="form-group"><label>الخيار 5 (عربي)</label><input id="form-opt5-ar" placeholder="مشاهدات تيكتوك"></div>
+          <div class="form-group"><label>Option 5 (FR)</label><input id="form-opt5-fr" placeholder="Vues TikTok"></div>
+          <div class="form-group"><label>الخيار 6 (عربي)</label><input id="form-opt6-ar" placeholder="إعجابات الفيديو"></div>
+          <div class="form-group"><label>Option 6 (FR)</label><input id="form-opt6-fr" placeholder="Likes Vidéo"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>📝 تسميات الحقول</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>اختر الخدمة (عربي)</label><input id="form-label-service-ar" placeholder="اختر الخدمة"></div>
+          <div class="form-group"><label>Service label (FR)</label><input id="form-label-service-fr" placeholder="Choisissez le service"></div>
+          <div class="form-group"><label>الاسم الكامل (عربي)</label><input id="form-label-name-ar" placeholder="الإسم الكامل"></div>
+          <div class="form-group"><label>Nom (FR)</label><input id="form-label-name-fr" placeholder="Nom complet"></div>
+          <div class="form-group"><label>رقم الهاتف (عربي)</label><input id="form-label-phone-ar" placeholder="رقم الهاتف"></div>
+          <div class="form-group"><label>Téléphone (FR)</label><input id="form-label-phone-fr" placeholder="Numéro de téléphone"></div>
+          <div class="form-group"><label>الولاية (عربي)</label><input id="form-label-wilaya-ar" placeholder="الولاية"></div>
+          <div class="form-group"><label>Wilaya (FR)</label><input id="form-label-wilaya-fr" placeholder="Wilaya"></div>
+          <div class="form-group"><label>الرابط (عربي)</label><input id="form-label-link-ar" placeholder="رابط الحساب أو اسم المستخدم"></div>
+          <div class="form-group"><label>Lien (FR)</label><input id="form-label-link-fr" placeholder="Lien du compte ou nom d'utilisateur"></div>
+          <div class="form-group"><label>الكمية (عربي)</label><input id="form-label-qty-ar" placeholder="اختر الكمية"></div>
+          <div class="form-group"><label>Quantité (FR)</label><input id="form-label-qty-fr" placeholder="Choisissez la quantité"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🧾 الملخص</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>الخدمة: (عربي)</label><input id="summary-service-ar" placeholder="الخدمة:"></div>
+          <div class="form-group"><label>Service: (FR)</label><input id="summary-service-fr" placeholder="Service:"></div>
+          <div class="form-group"><label>الكمية: (عربي)</label><input id="summary-qty-ar" placeholder="الكمية:"></div>
+          <div class="form-group"><label>Quantité: (FR)</label><input id="summary-qty-fr" placeholder="Quantité:"></div>
+          <div class="form-group"><label>السعر: (عربي)</label><input id="summary-price-ar" placeholder="السعر:"></div>
+          <div class="form-group"><label>Prix: (FR)</label><input id="summary-price-fr" placeholder="Prix:"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🔄 كيفية العمل</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>العنوان (عربي)</label><input id="how-tag-ar" placeholder="كيف يعمل؟"></div>
+          <div class="form-group"><label>Titre (FR)</label><input id="how-tag-fr" placeholder="Comment ça marche?"></div>
+          <div class="form-group"><label>اللقب (عربي)</label><input id="how-title-ar" placeholder="3 خطوات بسيطة فقط"></div>
+          <div class="form-group"><label>Sous-titre (FR)</label><input id="how-title-fr" placeholder="Seulement 3 étapes simples"></div>
+          <div class="form-group"><label>الخطوة 1 (عربي)</label><input id="step1-title-ar" placeholder="اختر الخدمة"></div>
+          <div class="form-group"><label>Étape 1 (FR)</label><input id="step1-title-fr" placeholder="Choisissez"></div>
+          <div class="form-group" style="grid-column:1/-1"><label>وصف 1 (عربي)</label><textarea id="step1-desc-ar" rows="2" placeholder="اختر المنصة والكمية التي تريدها"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Desc 1 (FR)</label><textarea id="step1-desc-fr" rows="2" placeholder="Choisissez la plateforme et la quantité"></textarea></div>
+          <div class="form-group"><label>الخطوة 2 (عربي)</label><input id="step2-title-ar" placeholder="تواصل عبر واتساب"></div>
+          <div class="form-group"><label>Étape 2 (FR)</label><input id="step2-title-fr" placeholder="Contactez-nous"></div>
+          <div class="form-group" style="grid-column:1/-1"><label>وصف 2 (عربي)</label><textarea id="step2-desc-ar" rows="2" placeholder="أرسل تفاصيل طلبك وادفع بطريقتك المفضلة"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Desc 2 (FR)</label><textarea id="step2-desc-fr" rows="2" placeholder="Envoyez les détails de votre commande et payez"></textarea></div>
+          <div class="form-group"><label>الخطوة 3 (عربي)</label><input id="step3-title-ar" placeholder="استقبل المتابعين"></div>
+          <div class="form-group"><label>Étape 3 (FR)</label><input id="step3-title-fr" placeholder="Recevez"></div>
+          <div class="form-group" style="grid-column:1/-1"><label>وصف 3 (عربي)</label><textarea id="step3-desc-ar" rows="2" placeholder="يبدأ التوصيل فور تأكيد الدفع 🚀"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Desc 3 (FR)</label><textarea id="step3-desc-fr" rows="2" placeholder="La livraison commence dès confirmation du paiement 🚀"></textarea></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>💳 طرق الدفع</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>العنوان (عربي)</label><input id="payment-tag-ar" placeholder="طرق الدفع"></div>
+          <div class="form-group"><label>Titre (FR)</label><input id="payment-tag-fr" placeholder="Moyens de paiement"></div>
+          <div class="form-group"><label>اللقب (عربي)</label><input id="payment-title-ar" placeholder="ادفع بالطريقة التي تريحك"></div>
+          <div class="form-group"><label>Sous-titre (FR)</label><input id="payment-title-fr" placeholder="Payez comme vous voulez"></div>
+          <div class="form-group"><label>الطريقة 1</label><input id="pay-name1" placeholder="CCP"></div>
+          <div class="form-group"><label>الطريقة 2</label><input id="pay-name2" placeholder="BaridiMob"></div>
+          <div class="form-group"><label>الطريقة 3</label><input id="pay-name3" placeholder="Binance"></div>
+          <div class="form-group"><label>الطريقة 4</label><input id="pay-name4" placeholder="USDT"></div>
+          <div class="form-group"><label>الطريقة 5</label><input id="pay-name5" placeholder="RedotPay"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>📢 CTA (دعوة لاتخاذ إجراء)</h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column:1/-1"><label>العنوان (عربي)</label><textarea id="cta-title-ar" rows="2" placeholder="جاهز لتزيد متابعينك؟"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Titre (FR)</label><textarea id="cta-title-fr" rows="2" placeholder="Prêt à booster vos abonnés?"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>الوصف (عربي)</label><textarea id="cta-desc-ar" rows="3" placeholder="اطلب 10 آلاف متابع الآن واحصل على هدايا مجانية"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Description (FR)</label><textarea id="cta-desc-fr" rows="3" placeholder="Commandez 10 000 abonnés maintenant"></textarea></div>
+          <div class="form-group"><label>الزر (عربي)</label><input id="cta-btn-ar" placeholder="اطلب الآن"></div>
+          <div class="form-group"><label>Bouton (FR)</label><input id="cta-btn-fr" placeholder="Commander maintenant"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>❓ الأسئلة الشائعة (العناوين)</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>العنوان (عربي)</label><input id="faq-tag-ar" placeholder="أسئلة شائعة"></div>
+          <div class="form-group"><label>Titre (FR)</label><input id="faq-tag-fr" placeholder="FAQ"></div>
+          <div class="form-group"><label>اللقب (عربي)</label><input id="faq-title-ar" placeholder="أسئلة يسألها العملاء"></div>
+          <div class="form-group"><label>Sous-titre (FR)</label><input id="faq-title-fr" placeholder="Questions fréquentes"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>✅ صفحة الشكر</h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column:1/-1"><label>العنوان (عربي)</label><textarea id="ty-title-ar" rows="2" placeholder="شكراً على طلبك!"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Titre (FR)</label><textarea id="ty-title-fr" rows="2" placeholder="Merci pour votre commande!"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>الوصف (عربي)</label><textarea id="ty-desc-ar" rows="3" placeholder="تم استلام طلبك بنجاح!"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1"><label>Description (FR)</label><textarea id="ty-desc-fr" rows="3" placeholder="Votre commande a été reçue avec succès!"></textarea></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🔘 زر الطلب العائم</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>النص (عربي)</label><input id="float-cta-ar" placeholder="اطلب الآن"></div>
+          <div class="form-group"><label>Texte (FR)</label><input id="float-cta-fr" placeholder="Commandez"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>📝 تسمية زر الإرسال</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>النص (عربي)</label><input id="form-submit-ar" placeholder="اطلب الآن"></div>
+          <div class="form-group"><label>Texte (FR)</label><input id="form-submit-fr" placeholder="Commandez maintenant"></div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="saveContent()">💾 حفظ المحتوى</button>
+    </div>
+
+    <!-- Why Us -->
+    <div class="page" id="page-whyw" style="display:none">
+      <h2 class="page-title">💡 لماذا نحن</h2>
+      <p class="page-subtitle">تعديل بطاقات لماذا ZidFollow</p>
+      <div id="whyContainer"></div>
+      <button class="btn btn-primary" onclick="saveWhy()" style="margin-top:0.5rem">💾 حفظ التعديلات</button>
+    </div>
+
+    <!-- FAQ -->
+    <div class="page" id="page-faq" style="display:none">
+      <h2 class="page-title">❓ الأسئلة الشائعة</h2>
+      <p class="page-subtitle">تعديل الأسئلة والأجوبة</p>
+      <div class="faq-grid" id="faqContainer"></div>
+      <button class="btn btn-primary" onclick="saveFaq()" style="margin-top:1rem">💾 حفظ التعديلات</button>
+    </div>
+
+    <!-- Orders -->
+    <div class="page" id="page-orders" style="display:none">
+      <h2 class="page-title">📦 الطلبات</h2>
+      <p class="page-subtitle">سجل الطلبات المرسلة</p>
+      <div id="ordersContainer"></div>
+      <div style="margin-top:1rem;display:flex;gap:0.75rem">
+        <button class="btn btn-outline btn-sm" onclick="renderOrders()">🔄 تحديث</button>
+        <button class="btn btn-danger btn-sm" onclick="if(confirm('حذف كل الطلبات؟')){localStorage.removeItem('zidfollow_orders');renderOrders();adminToast('تم الحذف')}">🗑 حذف الكل</button>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="page" id="page-settings" style="display:none">
+      <h2 class="page-title">⚙ الإعدادات</h2>
+      <p class="page-subtitle">إعدادات الموقع والربط مع الخدمات الخارجية</p>
+      <div class="section-card">
+        <h3>📞 واتساب</h3>
+        <div class="form-group" style="max-width:400px">
+          <label>رقم الواتساب (بدون +)</label>
+          <input id="set-wa" placeholder="213558823254">
+        </div>
+      </div>
+      <div class="section-card">
+        <h3>🔌 ربط الطلبات (اختياري)</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Google Sheets URL</label><input id="set-sheet" placeholder="https://script.google.com/macros/s/..."></div>
+          <div class="form-group"><label>CRM API URL</label><input id="set-crm" placeholder="https://votre-crm.com/api/order"></div>
+          <div class="form-group"><label>CRM API Key</label><input id="set-crmkey" placeholder="votre-clé-api"></div>
+        </div>
+        <p style="font-size:0.75rem;color:var(--text2);margin-top:0.5rem">إذا تركت الحقول فارغة، سيتم إرسال الطلبات عبر واتساب فقط.</p>
+      </div>
+      <div class="section-card">
+        <h3>📧 إعدادات البريد (EmailJS)</h3>
+        <p style="font-size:0.75rem;color:var(--text2);margin-bottom:1rem">
+          يجب التسجيل في <a href="https://www.emailjs.com" target="_blank" style="color:var(--blue)">EmailJS</a> مجاناً، ثم ربط حساب Gmail وإنشاء قالب بريد.
+        </p>
+        <div class="form-grid">
+          <div class="form-group"><label>البريد الإلكتروني للمشرف</label><input id="set-admin-email" placeholder="admin@gmail.com" dir="ltr"></div>
+          <div class="form-group"><label>EmailJS Service ID</label><input id="set-ej-service" placeholder="service_xxx" dir="ltr"></div>
+          <div class="form-group"><label>EmailJS Template ID</label><input id="set-ej-template" placeholder="template_xxx" dir="ltr"></div>
+          <div class="form-group"><label>EmailJS Public Key</label><input id="set-ej-key" placeholder="your_public_key" dir="ltr"></div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="sendTestEmail()" style="margin-top:0.5rem">📨 إرسال بريد تجريبي</button>
+      </div>
+      <div class="section-card">
+        <h3>🔐 كلمة مرور لوحة التحكم</h3>
+        <div class="form-group" style="max-width:400px">
+          <label>كلمة المرور الحالية: <span id="currentPassDisplay" style="color:var(--blue)">••••••••</span></label>
+          <input id="set-password" type="password" placeholder="كلمة مرور جديدة" style="margin-bottom:0.5rem">
+          <div id="passChangeStatus" style="font-size:0.78rem;color:var(--text2)"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="startPasswordChange()" id="changePassBtn">🔑 تغيير كلمة المرور</button>
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()" id="saveSettingsBtn" style="margin-right:0.5rem">💾 حفظ الإعدادات</button>
+      </div>
+      <div class="section-card">
+        <h3>🛡️ سجل الأمان</h3>
+        <div id="securityLog" style="max-height:300px;overflow-y:auto">
+          <div class="empty-state"><p style="font-size:0.85rem;color:var(--text2)">لا توجد أحداث بعد</p></div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="clearSecurityLog()" style="margin-top:0.5rem">🗑 مسح السجل</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="adminToast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    const ADMIN_PASS_KEY = 'zidfollow_admin_pass';
+    const LOGIN_ATTEMPTS_KEY = 'zidfollow_login_attempts';
+    const SECURITY_LOG_KEY = 'zidfollow_security_log';
+    const SESSION_KEY = 'zidfollow_admin_session';
+    const MAX_ATTEMPTS = 5;
+    const LOCKOUT_MINUTES = 15;
+    const SESSION_TIMEOUT_MINUTES = 30;
+    let verifyCodeValue = null;
+    let verifyTimer = null;
+    let verifyExpires = 0;
+    let sessionCheckInterval = null;
+
+    emailjs.init(''); // will be set from settings
+
+    // ── Login Attempts ──
+    function getAttempts() {
+      return JSON.parse(localStorage.getItem(LOGIN_ATTEMPTS_KEY) || '{"count":0,"first":0}');
+    }
+
+    function checkLockout() {
+      const a = getAttempts();
+      if (a.count >= MAX_ATTEMPTS) {
+        const elapsed = Date.now() - a.first;
+        if (elapsed < LOCKOUT_MINUTES * 60 * 1000) {
+          const remaining = Math.ceil((LOCKOUT_MINUTES * 60 * 1000 - elapsed) / 60000);
+          document.getElementById('loginLockout').style.display = 'block';
+          document.getElementById('loginAttempts').textContent = `حاول بعد ${remaining} دقيقة`;
+          return true;
+        } else {
+          localStorage.setItem(LOGIN_ATTEMPTS_KEY, '{"count":0,"first":0}');
+        }
+      }
+      document.getElementById('loginLockout').style.display = 'none';
+      return false;
+    }
+
+    function recordAttempt(success) {
+      const a = getAttempts();
+      if (success) {
+        localStorage.setItem(LOGIN_ATTEMPTS_KEY, '{"count":0,"first":0}');
+        return;
+      }
+      if (a.count === 0) a.first = Date.now();
+      a.count++;
+      localStorage.setItem(LOGIN_ATTEMPTS_KEY, JSON.stringify(a));
+      document.getElementById('loginAttempts').textContent = `محاولات فاشلة: ${a.count} / ${MAX_ATTEMPTS}`;
+    }
+
+    // ── Session Management ──
+    function touchSession() {
+      localStorage.setItem(SESSION_KEY, Date.now().toString());
+    }
+
+    function checkSession() {
+      const last = parseInt(localStorage.getItem(SESSION_KEY));
+      if (last && (Date.now() - last) > SESSION_TIMEOUT_MINUTES * 60 * 1000) {
+        logout();
+        return false;
+      }
+      return true;
+    }
+
+    function startSessionMonitor() {
+      if (sessionCheckInterval) clearInterval(sessionCheckInterval);
+      sessionCheckInterval = setInterval(() => {
+        if (!checkSession()) clearInterval(sessionCheckInterval);
+      }, 30000);
+      document.addEventListener('click', touchSession);
+      document.addEventListener('keydown', touchSession);
+    }
+
+    function logout() {
+      localStorage.removeItem(SESSION_KEY);
+      if (sessionCheckInterval) clearInterval(sessionCheckInterval);
+      document.removeEventListener('click', touchSession);
+      document.removeEventListener('keydown', touchSession);
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginPass').value = '';
+      document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+      adminToast('انتهت الجلسة. يرجى تسجيل الدخول مجدداً');
+    }
+
+    // ── Security Log ──
+    function logSecurity(event, type) {
+      const log = JSON.parse(localStorage.getItem(SECURITY_LOG_KEY) || '[]');
+      log.unshift({ event, type, time: new Date().toLocaleString() });
+      if (log.length > 50) log.length = 50;
+      localStorage.setItem(SECURITY_LOG_KEY, JSON.stringify(log));
+    }
+
+    function renderSecurityLog() {
+      const log = JSON.parse(localStorage.getItem(SECURITY_LOG_KEY) || '[]');
+      const container = document.getElementById('securityLog');
+      if (!log.length) {
+        container.innerHTML = '<div class="empty-state"><p style="font-size:0.85rem;color:var(--text2)">لا توجد أحداث بعد</p></div>';
+        return;
+      }
+      const badgeMap = { login: 'badge-login', pass: 'badge-pass', edit: 'badge-edit' };
+      container.innerHTML = log.map(e => `
+        <div class="sec-log-item">
+          <span class="event"><span class="badge ${badgeMap[e.type] || 'badge-login'}">${e.type}</span>${e.event}</span>
+          <span class="time">${e.time}</span>
+        </div>
+      `).join('');
+    }
+
+    function clearSecurityLog() {
+      if (!confirm('مسح سجل الأمان؟')) return;
+      localStorage.removeItem(SECURITY_LOG_KEY);
+      renderSecurityLog();
+      adminToast('✅ تم مسح السجل');
+    }
+
+    // ── Login ──
+    function checkLogin() {
+      if (checkLockout()) return;
+      const stored = localStorage.getItem(ADMIN_PASS_KEY) || getAdminPass();
+      const input = document.getElementById('loginPass').value;
+      if (input === stored) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('loginError').style.display = 'none';
+        document.getElementById('loginAttempts').textContent = '';
+        recordAttempt(true);
+        touchSession();
+        startSessionMonitor();
+        logSecurity('تسجيل دخول ناجح', 'login');
+        initAdmin();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        recordAttempt(false);
+        checkLockout();
+        logSecurity('محاولة دخول فاشلة', 'login');
+      }
+    }
+
+    // ── Navigation ──
+    function switchPage(page) {
+      document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+      const el = document.getElementById('page-' + page);
+      if (el) el.style.display = 'block';
+      document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`.sidebar-nav a[data-page="${page}"]`);
+      if (link) link.classList.add('active');
+      document.getElementById('sidebar').classList.remove('open');
+    }
+
+    document.querySelectorAll('.sidebar-nav a').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        switchPage(a.dataset.page);
+        if (a.dataset.page === 'orders') renderOrders();
+        if (a.dataset.page === 'dashboard') updateDashboard();
+        if (a.dataset.page === 'settings') renderSecurityLog();
+        if (a.dataset.page === 'content') loadContent();
+        if (a.dataset.page === 'hero') loadHero();
+        if (a.dataset.page === 'whyw') loadWhy();
+        if (a.dataset.page === 'faq') loadFaq();
+      });
+    });
+
+    // ── Toast ──
+    function adminToast(msg) {
+      const t = document.getElementById('adminToast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._hide);
+      t._hide = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ── Content Helpers ──
+    const EDIT_KEY = 'zidfollow_edits';
+
+    function loadEdits() {
+      return JSON.parse(localStorage.getItem(EDIT_KEY) || '{}');
+    }
+
+    function saveEdits(data) {
+      localStorage.setItem(EDIT_KEY, JSON.stringify(data));
+    }
+
+    function getField(id) {
+      return document.getElementById(id)?.value?.trim() || '';
+    }
+
+    function setField(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.value = val || '';
+    }
+
+    // ── Hero ──
+    function loadHero() {
+      const d = loadEdits();
+      setField('hero1-ar', d['hero1-ar']);
+      setField('hero1-fr', d['hero1-fr']);
+      setField('hero2-ar', d['hero2-ar']);
+      setField('hero2-fr', d['hero2-fr']);
+      setField('stat-clients', d['stat-clients']);
+      setField('stat-clients-fr', d['stat-clients-fr']);
+      setField('stat-followers', d['stat-followers']);
+      setField('stat-followers-fr', d['stat-followers-fr']);
+      setField('stat-rating', d['stat-rating']);
+      setField('stat-rating-fr', d['stat-rating-fr']);
+    }
+
+    function saveHero() {
+      const d = loadEdits();
+      ['hero1-ar','hero1-fr','hero2-ar','hero2-fr',
+       'stat-clients','stat-clients-fr','stat-followers','stat-followers-fr',
+       'stat-rating','stat-rating-fr'].forEach(k => d[k] = getField(k));
+      saveEdits(d);
+      logSecurity('تعديل القسم الرئيسي', 'edit');
+      adminToast('✅ تم حفظ تعديلات القسم الرئيسي');
+    }
+
+    // ── Why Us ──
+    const defaultWhy = [
+      { arTitle: 'تسليم سريع', arDesc: 'نبدأ تنفيذ طلبك بعد التأكيد و يصل المتابعون خلال 24 ساعة بعد الطلب',
+        frTitle: 'Livraison rapide', frDesc: 'Nous exécutons votre commande après confirmation et les abonnés arrivent sous 24h' },
+      { arTitle: 'آمن 100%', arDesc: 'لا نحتاج كلمة مرورك. طرق آمنة ومجربة',
+        frTitle: '100% Sécurisé', frDesc: 'Nous n\'avons pas besoin de votre mot de passe. Méthodes sûres et éprouvées' },
+      { arTitle: 'أسعار منافسة', arDesc: 'أفضل الأسعار في الجزائر مع جودة عالية مضمونة',
+        frTitle: 'Prix compétitifs', frDesc: 'Meilleurs prix en Algérie avec qualité garantie' },
+      { arTitle: 'ضمان استبدال', arDesc: 'إذا ألغى المتابعون اشتراكهم، نستبدلهم مجاناً لمدة 6 أشهر',
+        frTitle: 'Garantie de remplacement', frDesc: 'Si les abonnés se désabonnent, nous les remplaçons gratuitement pendant 6 mois' }
+    ];
+
+    function loadWhy() {
+      const d = loadEdits();
+      const container = document.getElementById('whyContainer');
+      container.innerHTML = '';
+      defaultWhy.forEach((item, i) => {
+        const n = i + 1;
+        const div = document.createElement('div');
+        div.className = 'section-card';
+        div.innerHTML = `
+          <h3>البطاقة ${n}</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>العنوان (عربي)</label><input id="why-title${n}-ar" value="${d['why-title'+n+'-ar'] || item.arTitle}"></div>
+            <div class="form-group"><label>Titre (FR)</label><input id="why-title${n}-fr" value="${d['why-title'+n+'-fr'] || item.frTitle}"></div>
+            <div class="form-group full"><label>الوصف (عربي)</label><textarea id="why-desc${n}-ar">${d['why-desc'+n+'-ar'] || item.arDesc}</textarea></div>
+            <div class="form-group full"><label>Description (FR)</label><textarea id="why-desc${n}-fr">${d['why-desc'+n+'-fr'] || item.frDesc}</textarea></div>
+          </div>`;
+        container.appendChild(div);
+      });
+    }
+
+    function saveWhy() {
+      const d = loadEdits();
+      for (let i = 1; i <= 4; i++) {
+        d[`why-title${i}-ar`] = getField(`why-title${i}-ar`);
+        d[`why-title${i}-fr`] = getField(`why-title${i}-fr`);
+        d[`why-desc${i}-ar`] = getField(`why-desc${i}-ar`);
+        d[`why-desc${i}-fr`] = getField(`why-desc${i}-fr`);
+      }
+      saveEdits(d);
+      logSecurity('تعديل قسم لماذا نحن', 'edit');
+      adminToast('✅ تم حفظ تعديلات لماذا نحن');
+    }
+
+    // ── FAQ ──
+    const defaultFaq = [
+      { arQ: 'هل المتابعون حقيقيون؟', arA: 'لا، هؤلاء ليسوا أشخاصاً حقيقيين. النفخ يهدف لزيادة الظهور والمصداقية.',
+        frQ: 'Les abonnés sont-ils réels?', frA: 'Non, ce ne sont pas de vraies personnes. Le gonflage booste la visibilité.' },
+      { arQ: 'كم يستغرق التوصيل؟', arA: 'يبدأ التسليم خلال 24-48 ساعة بعد الطلب.',
+        frQ: 'Combien de temps prend la livraison?', frA: 'La livraison commence dans les 24-48h après commande.' },
+      { arQ: 'هل أحتاج لكلمة المرور؟', arA: 'لا، نحتاج فقط رابط الصفحة أو اسم المستخدم.',
+        frQ: 'Ai-je besoin d\'un mot de passe?', frA: 'Non, nous avons seulement besoin du lien de la page ou du nom d\'utilisateur.' },
+      { arQ: 'ما هي طرق الدفع المقبولة؟', arA: 'CCP، BaridiMob، Binance، USDT، RedotPay.',
+        frQ: 'Quels sont les modes de paiement acceptés?', frA: 'CCP, BaridiMob, Binance, USDT, RedotPay.' },
+      { arQ: 'هل يوجد ضمان؟', arA: 'نعم، نستبدل المتابعين الذين يلغون اشتراكهم مجاناً لمدة 6 أشهر.',
+        frQ: 'Y a-t-il une garantie?', frA: 'Oui, nous remplaçons les abonnés qui se désabonnent gratuitement pendant 6 mois.' }
+    ];
+
+    function loadFaq() {
+      const d = loadEdits();
+      const container = document.getElementById('faqContainer');
+      container.innerHTML = '';
+      defaultFaq.forEach((item, i) => {
+        const n = i + 1;
+        const div = document.createElement('div');
+        div.className = 'faq-edit-item';
+        div.innerHTML = `
+          <div class="q-row">
+            <input id="faq-q${n}-ar" placeholder="السؤال (عربي)" value="${d['faq-q'+n+'-ar'] || item.arQ}">
+            <input id="faq-q${n}-fr" placeholder="Question (FR)" value="${d['faq-q'+n+'-fr'] || item.frQ}">
+          </div>
+          <div class="a-row">
+            <input id="faq-a${n}-ar" placeholder="الجواب (عربي)" value="${d['faq-a'+n+'-ar'] || item.arA}">
+            <input id="faq-a${n}-fr" placeholder="Réponse (FR)" value="${d['faq-a'+n+'-fr'] || item.frA}" style="margin-top:0.35rem">
+          </div>`;
+        container.appendChild(div);
+      });
+    }
+
+    function saveFaq() {
+      const d = loadEdits();
+      for (let i = 1; i <= 5; i++) {
+        d[`faq-q${i}-ar`] = getField(`faq-q${i}-ar`);
+        d[`faq-q${i}-fr`] = getField(`faq-q${i}-fr`);
+        d[`faq-a${i}-ar`] = getField(`faq-a${i}-ar`);
+        d[`faq-a${i}-fr`] = getField(`faq-a${i}-fr`);
+      }
+      saveEdits(d);
+      logSecurity('تعديل الأسئلة الشائعة', 'edit');
+      adminToast('✅ تم حفظ تعديلات الأسئلة');
+    }
+
+    // ── Content ──
+    const contentKeys = [
+      'services-tag','services-title','services-desc',
+      'svc-name1','svc-name2','svc-name3','svc-name4','svc-name5','svc-name6',
+      'order-tag','order-title','order-desc',
+      'form-label-service','form-label-name','form-label-phone','form-label-wilaya','form-label-link','form-label-qty',
+      'form-opt1','form-opt2','form-opt3','form-opt4','form-opt5','form-opt6',
+      'summary-service','summary-qty','summary-price',
+      'form-submit',
+      'how-tag','how-title',
+      'step1-title','step1-desc','step2-title','step2-desc','step3-title','step3-desc',
+      'payment-tag','payment-title',
+      'pay-name1','pay-name2','pay-name3','pay-name4','pay-name5',
+      'faq-tag','faq-title',
+      'cta-title','cta-desc','cta-btn',
+      'ty-title','ty-desc',
+      'float-cta'
+    ];
+
+    function loadContent() {
+      const d = loadEdits();
+      contentKeys.forEach(k => {
+        setField(k + '-ar', d[k + '-ar']);
+        setField(k + '-fr', d[k + '-fr']);
+      });
+    }
+
+    function saveContent() {
+      const d = loadEdits();
+      contentKeys.forEach(k => {
+        d[k + '-ar'] = getField(k + '-ar');
+        d[k + '-fr'] = getField(k + '-fr');
+      });
+      saveEdits(d);
+      logSecurity('تحديث المحتوى', 'edit');
+      adminToast('✅ تم حفظ المحتوى');
+    }
+
+    // ── Orders ──
+    function renderOrders() {
+      const container = document.getElementById('ordersContainer');
+      const orders = JSON.parse(localStorage.getItem('zidfollow_orders') || '[]');
+      if (!orders.length) {
+        container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>لا توجد طلبات بعد</p></div>';
+        return;
+      }
+      container.innerHTML = orders.slice().reverse().map(o => `
+        <div class="order-item">
+          <div><div class="label">👤 الإسم</div><div class="val">${o.name || '—'}</div></div>
+          <div><div class="label">📞 الهاتف</div><div class="val">${o.phone || '—'}</div></div>
+          <div><div class="label">📍 الولاية</div><div class="val">${o.wilaya || '—'}</div></div>
+          <div><div class="label">🎯 الخدمة</div><div class="val">${o.service || '—'}</div></div>
+          <div><div class="label">🔗 الحساب</div><div class="val">${o.account || '—'}</div></div>
+          <div><div class="label">📊 الكمية</div><div class="val">${o.quantity || '—'}</div></div>
+          <div><div class="label">💰 السعر</div><div class="val">${o.price || '—'}</div></div>
+          <div><div class="label">⏰ التاريخ</div><div class="val">${o.date || '—'}</div></div>
+        </div>
+      `).join('');
+    }
+
+    // ── Dashboard ──
+    function updateDashboard() {
+      const orders = JSON.parse(localStorage.getItem('zidfollow_orders') || '[]');
+      document.getElementById('dash-orders').textContent = orders.length;
+      const today = new Date().toDateString();
+      const todayCount = orders.filter(o => new Date(o.date).toDateString() === today).length;
+      document.getElementById('dash-today').textContent = todayCount;
+    }
+
+    // ── EmailJS Integration ──
+    function getEmailConfig() {
+      return {
+        service: getField('set-ej-service'),
+        template: getField('set-ej-template'),
+        key: getField('set-ej-key'),
+        email: getField('set-admin-email')
+      };
+    }
+
+    function saveEmailConfig(d) {
+      d['admin-email'] = getField('set-admin-email');
+      d['ej-service'] = getField('set-ej-service');
+      d['ej-template'] = getField('set-ej-template');
+      d['ej-key'] = getField('set-ej-key');
+    }
+
+    function initEmailJS() {
+      const cfg = getEmailConfig();
+      if (cfg.key) emailjs.init(cfg.key);
+    }
+
+    function sendCodeEmail(code) {
+      return new Promise((resolve, reject) => {
+        const cfg = getEmailConfig();
+        if (!cfg.service || !cfg.template || !cfg.key || !cfg.email) {
+          reject('⚠️ يرجى إكمال إعدادات EmailJS في الإعدادات أولاً');
+          return;
+        }
+        emailjs.init(cfg.key);
+        emailjs.send(cfg.service, cfg.template, {
+          to_email: cfg.email,
+          code: code,
+          subject: '🔐 رمز تأكيد تغيير كلمة المرور - ZidFollow Admin',
+          message: `رمز تأكيد تغيير كلمة المرور الخاص بك هو: ${code}\n\nينتهي هذا الرمز بعد 5 دقائق.\n\nإذا لم تطلب تغيير كلمة المرور، يرجى تجاهل هذا البريد.`
+        }).then(resolve).catch(reject);
+      });
+    }
+
+    function sendTestEmail() {
+      const cfg = getEmailConfig();
+      if (!cfg.service || !cfg.template || !cfg.key || !cfg.email) {
+        adminToast('⚠️ يرجى إكمال إعدادات EmailJS أولاً');
+        return;
+      }
+      // Auto-save EmailJS settings before test
+      const d = loadEdits();
+      saveEmailConfig(d);
+      saveEdits(d);
+      emailjs.init(cfg.key);
+      emailjs.send(cfg.service, cfg.template, {
+        to_email: cfg.email,
+        code: '123456',
+        subject: '📨 بريد تجريبي - ZidFollow Admin',
+        message: 'هذا بريد تجريبي للتأكد من إعدادات EmailJS.'
+      }).then(() => {
+        adminToast('✅ تم إرسال البريد التجريبي بنجاح');
+        logSecurity('إرسال بريد تجريبي EmailJS', 'edit');
+      }).catch(err => {
+        adminToast('❌ فشل الإرسال: ' + (err.text || err.message || 'خطأ'));
+      });
+    }
+
+    // ── Password Change with Code Verification ──
+    function startPasswordChange() {
+      const newPass = getField('set-password');
+      if (!newPass || newPass.length < 6) {
+        document.getElementById('passChangeStatus').textContent = '⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+        return;
+      }
+      if (newPass === getAdminPass()) {
+        document.getElementById('passChangeStatus').textContent = '⚠️ كلمة المرور الجديدة يجب أن تختلف عن الحالية';
+        return;
+      }
+      document.getElementById('passChangeStatus').textContent = '⏳ جاري إرسال رمز التأكيد...';
+
+      // Generate 6-digit code
+      verifyCodeValue = Math.floor(100000 + Math.random() * 900000).toString();
+      verifyExpires = Date.now() + 5 * 60 * 1000;
+
+      sendCodeEmail(verifyCodeValue).then(() => {
+        document.getElementById('passChangeStatus').textContent = '✅ تم إرسال الرمز إلى بريدك';
+        showVerifyModal();
+        startVerifyTimer();
+      }).catch(err => {
+        document.getElementById('passChangeStatus').textContent = '❌ فشل الإرسال: ' + (typeof err === 'string' ? err : err.text || 'خطأ');
+        verifyCodeValue = null;
+      });
+    }
+
+    function showVerifyModal() {
+      document.getElementById('verifyOverlay').classList.add('show');
+      document.getElementById('verifyError').textContent = '';
+      const inputs = document.querySelectorAll('#codeInputs input');
+      inputs.forEach((inp, i) => {
+        inp.value = '';
+        inp.addEventListener('input', () => {
+          if (inp.value && i < inputs.length - 1) inputs[i + 1].focus();
+        });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus();
+          if (e.key === 'Enter') verifyCode();
+        });
+      });
+      // Auto-paste: paste the full code into all 6 boxes
+      inputs[0].addEventListener('paste', (e) => {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        if (paste.length === 6) {
+          inputs.forEach((inp, j) => { inp.value = paste[j]; });
+          inputs[5].focus();
+        } else if (paste.length > 0 && paste.length <= 6) {
+          inputs.forEach((inp, j) => { inp.value = j < paste.length ? paste[j] : ''; });
+          inputs[Math.min(paste.length, 5)].focus();
+        }
+      });
+      setTimeout(() => inputs[0].focus(), 100);
+    }
+
+    function closeVerify() {
+      document.getElementById('verifyOverlay').classList.remove('show');
+      if (verifyTimer) clearInterval(verifyTimer);
+    }
+
+    function startVerifyTimer() {
+      if (verifyTimer) clearInterval(verifyTimer);
+      const el = document.getElementById('codeTimer');
+      verifyTimer = setInterval(() => {
+        const remaining = Math.max(0, Math.ceil((verifyExpires - Date.now()) / 1000));
+        const min = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const sec = String(remaining % 60).padStart(2, '0');
+        el.textContent = `ينتهي الكود بعد ${min}:${sec}`;
+        if (remaining <= 0) {
+          clearInterval(verifyTimer);
+          verifyCodeValue = null;
+          el.textContent = '⏰ انتهت صلاحية الكود';
+        }
+      }, 1000);
+    }
+
+    function verifyCode() {
+      const inputs = document.querySelectorAll('#codeInputs input');
+      const code = Array.from(inputs).map(i => i.value).join('');
+      if (!verifyCodeValue) {
+        document.getElementById('verifyError').textContent = '⚠️ انتهت صلاحية الرمز، حاول مرة أخرى';
+        return;
+      }
+      if (code !== verifyCodeValue) {
+        document.getElementById('verifyError').textContent = '⚠️ الرمز غير صحيح';
+        inputs.forEach(i => { i.value = ''; });
+        inputs[0].focus();
+        return;
+      }
+
+      // Code correct — apply password change
+      const newPass = getField('set-password');
+      localStorage.setItem(ADMIN_PASS_KEY, newPass);
+        document.getElementById('currentPassDisplay').textContent = '••••••••';
+      document.getElementById('set-password').value = '';
+      document.getElementById('passChangeStatus').textContent = '✅ تم تغيير كلمة المرور بنجاح';
+      logSecurity('تغيير كلمة مرور لوحة التحكم', 'pass');
+      closeVerify();
+      adminToast('🔐 تم تغيير كلمة المرور بنجاح');
+
+      // Save EmailJS config too
+      const d = loadEdits();
+      saveEmailConfig(d);
+      saveEdits(d);
+    }
+
+    // ── Settings ──
+    function loadSettings() {
+      const d = loadEdits();
+      setField('set-wa', d['wa-number'] || '213558823254');
+      setField('set-sheet', d['backup-url'] || '');
+      setField('set-crm', d['crm-url'] || '');
+      setField('set-crmkey', d['crm-key'] || '');
+      setField('set-admin-email', d['admin-email'] || '');
+      setField('set-ej-service', d['ej-service'] || '');
+      setField('set-ej-template', d['ej-template'] || '');
+      setField('set-ej-key', d['ej-key'] || '');
+      const storedPass = getAdminPass();
+      document.getElementById('currentPassDisplay').textContent = '••••••••';
+    }
+
+    function saveSettings() {
+      const d = loadEdits();
+      d['wa-number'] = getField('set-wa');
+      d['backup-url'] = getField('set-sheet');
+      d['crm-url'] = getField('set-crm');
+      d['crm-key'] = getField('set-crmkey');
+      saveEmailConfig(d);
+      saveEdits(d);
+
+      initEmailJS();
+      logSecurity('تحديث الإعدادات', 'edit');
+      adminToast('✅ تم حفظ الإعدادات');
+    }
+
+    // ── Init ──
+    function initAdmin() {
+      initEmailJS();
+      loadHero();
+      loadWhy();
+      loadFaq();
+      loadContent();
+      loadSettings();
+      updateDashboard();
+      renderSecurityLog();
+      switchPage('dashboard');
+    }
+
+    // Auto-login if session valid, otherwise show login
+    document.addEventListener('DOMContentLoaded', () => {
+      const lastSession = parseInt(localStorage.getItem(SESSION_KEY));
+      if (lastSession && (Date.now() - lastSession) < SESSION_TIMEOUT_MINUTES * 60 * 1000 && !checkLockout()) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        touchSession();
+        startSessionMonitor();
+        initAdmin();
+        return;
+      }
+      const stored = localStorage.getItem(ADMIN_PASS_KEY) || getAdminPass();
+      document.getElementById('loginPass').placeholder = 'أدخل كلمة المرور';
+      checkLockout();
+      const a = getAttempts();
+      if (a.count > 0) {
+        document.getElementById('loginAttempts').textContent = `محاولات فاشلة: ${a.count} / ${MAX_ATTEMPTS}`;
+      }
+    });
+  </script>
+</body>
+</html>
