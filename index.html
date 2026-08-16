@@ -3447,7 +3447,7 @@
     <div class="ty-box">
       <span class="ty-check">✅</span>
       <h1 data-edit="ty-title" data-ar="تم تأكيد طلبك!" data-fr="Commande confirmée!">تم تأكيد طلبك!</h1>
-      <p id="tyTagline" class="ty-tagline">انفجار 🔥</p>
+      <p id="tyTagline" class="ty-tagline" data-ar="🎉 شكراً!" data-fr="🎉 Merci!">🎉 شكراً!</p>
       <div class="ty-card">
         <div class="ty-row">
           <span data-ar="رقم الطلب" data-fr="Numéro de commande">رقم الطلب</span>
@@ -3792,11 +3792,6 @@
       document.getElementById('tyService').textContent = svcLabel;
       document.getElementById('tyQty').textContent = state.qty ? state.qty.toLocaleString() : '—';
       document.getElementById('tyPrice').textContent = state.price || '—';
-      const prefix = state.orderId.split('-')[0];
-      document.getElementById('tyTagline').textContent = state.lang === 'ar'
-        ? prefix + ' انفجار 🔥'
-        : prefix + ' exploser 🔥';
-
       // Pre-filled WhatsApp support message
       const waText = state.lang === 'ar'
         ? 'السلام عليكم، أريد تأكيد طلبي:\n\n🆔 رقم الطلب: ' + state.orderId + '\n🎯 الخدمة: ' + svcLabel + '\n📊 الكمية: ' + (state.qty ? state.qty.toLocaleString() : '—') + '\n💰 السعر: ' + state.price + '\n\nهل طلبي مؤكد؟ 🙏'
