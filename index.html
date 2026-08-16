@@ -2025,6 +2025,51 @@
       line-height: 1.8;
     }
 
+    .ty-tagline {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--blue);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .ty-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+
+    .ty-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .ty-row:last-child {
+      border-bottom: none;
+    }
+
+    .ty-row strong,
+    .ty-row .ty-val {
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .ty-order-no {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: 0.5px;
+    }
+
     /* ── Responsive ── */
 
     /* Tablet & below */
@@ -3401,15 +3446,42 @@
   <div class="thankyou" id="thankyouPage">
     <div class="ty-box">
       <span class="ty-check">✅</span>
-      <h1 data-edit="ty-title" data-ar="شكراً على طلبك!" data-fr="Merci pour votre commande!">شكراً على طلبك!</h1>
-      <p data-edit="ty-desc" data-ar="تم استلام طلبك بنجاح! سنقوم بمراجعته وتأكيده في أقرب وقت. 🚀"
-        data-fr="Votre commande a été reçue avec succès! Nous allons la vérifier et la confirmer dans les plus brefs délais. 🚀">
-        تم استلام طلبك بنجاح! سنقوم بمراجعته وتأكيده في أقرب وقت. 🚀</p>
+      <h1 data-edit="ty-title" data-ar="تم تأكيد طلبك!" data-fr="Commande confirmée!">تم تأكيد طلبك!</h1>
+      <p id="tyTagline" class="ty-tagline">انفجار 🔥</p>
+      <div class="ty-card">
+        <div class="ty-row">
+          <span data-ar="رقم الطلب" data-fr="Numéro de commande">رقم الطلب</span>
+          <strong class="ty-order-no" id="tyOrderNumber">#—</strong>
+        </div>
+        <div class="ty-row">
+          <span data-ar="الحالة" data-fr="Statut">الحالة</span>
+          <span class="ty-val" data-ar="✅ مؤكد" data-fr="✅ Confirmé">✅ مؤكد</span>
+        </div>
+        <div class="ty-row">
+          <span data-ar="بدء التنفيذ" data-fr="Démarrage">بدء التنفيذ</span>
+          <span class="ty-val" data-ar="خلال ساعتين" data-fr="Dans 2 heures">خلال ساعتين</span>
+        </div>
+        <div class="ty-row">
+          <span data-ar="الخدمة" data-fr="Service">الخدمة</span>
+          <span class="ty-val" id="tyService">—</span>
+        </div>
+        <div class="ty-row">
+          <span data-ar="الكمية" data-fr="Quantité">الكمية</span>
+          <span class="ty-val" id="tyQty">—</span>
+        </div>
+        <div class="ty-row">
+          <span data-ar="السعر" data-fr="Prix">السعر</span>
+          <span class="ty-val" id="tyPrice">—</span>
+        </div>
+      </div>
+      <p data-edit="ty-desc" data-ar="تم استلام طلبك بنجاح! سيقوم فريقنا بتأكيد الطلب وبدء التنفيذ خلال ساعتين. 🚀"
+        data-fr="Votre commande est confirmée! Notre équipe va la valider et démarrer dans environ 2 heures. 🚀">
+        تم استلام طلبك بنجاح! سيقوم فريقنا بتأكيد الطلب وبدء التنفيذ خلال ساعتين. 🚀</p>
       <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
         <a href="#" onclick="backToHome()" class="btn-primary" style="display:inline-flex;text-decoration:none">
           <span data-ar="← العودة للرئيسية" data-fr="← Retour à l'accueil">← العودة للرئيسية</span>
         </a>
-        <a href="https://wa.me/213776647176" target="_blank" class="btn-primary" style="display:inline-flex;text-decoration:none;background:linear-gradient(135deg,#25D366,#128C7E);align-items:center;gap:0.5rem">
+        <a href="https://wa.me/213776647176" target="_blank" id="tyWaBtn" class="btn-primary" style="display:inline-flex;text-decoration:none;background:linear-gradient(135deg,#25D366,#128C7E);align-items:center;gap:0.5rem">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           <span data-ar="تواصل مع الدعم" data-fr="Contacter le support">تواصل مع الدعم</span>
         </a>
@@ -3600,6 +3672,16 @@
       document.getElementById('sumPrice').textContent = state.price || '—';
     }
 
+    function genOrderId(service) {
+      const now = new Date();
+      const ymd = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+      const prefix = service.indexOf('instagram') === 0 ? 'IG' : service.indexOf('facebook') === 0 ? 'FB' : 'TT';
+      const key = 'zidfollow_order_seq_' + ymd;
+      const seq = (parseInt(localStorage.getItem(key) || '99', 10) || 99) + 1;
+      localStorage.setItem(key, String(seq));
+      return prefix + '-ALG-' + ymd + '-' + seq;
+    }
+
     // ── Submit order → WhatsApp ──
     function submitOrder() {
       // Rate limiting — allow 2 orders, then wait 30 min
@@ -3646,10 +3728,11 @@
         return;
       }
       state.username = uname;
+      state.orderId = genOrderId(state.service);
       const svcLabel = serviceLabels[state.lang][state.service] || state.service;
       const msg = state.lang === 'ar'
-        ? 'السلام عليكم، أريد طلب:\n\n👤 الإسم: ' + fullName + '\n📞 الهاتف: ' + phone + '\n📍 الولاية: ' + wilaya + '\n🎯 الخدمة: ' + svcLabel + '\n🔗 الحساب: ' + state.username + '\n📊 الكمية: ' + state.qty.toLocaleString() + '\n💰 السعر: ' + state.price + '\n\nأرجو التأكيد وتفاصيل الدفع 🙏'
-        : 'Bonjour, je voudrais commander:\n\n👤 Nom: ' + fullName + '\n📞 Tél: ' + phone + '\n📍 Wilaya: ' + wilaya + '\n🎯 Service: ' + svcLabel + '\n🔗 Compte: ' + state.username + '\n📊 Quantité: ' + state.qty.toLocaleString() + '\n💰 Prix: ' + state.price + '\n\nMerci de confirmer et d\'envoyer les détails de paiement 🙏';
+        ? 'السلام عليكم، أريد طلب:\n\n🆔 رقم الطلب: ' + state.orderId + '\n👤 الإسم: ' + fullName + '\n📞 الهاتف: ' + phone + '\n📍 الولاية: ' + wilaya + '\n🎯 الخدمة: ' + svcLabel + '\n🔗 الحساب: ' + state.username + '\n📊 الكمية: ' + state.qty.toLocaleString() + '\n💰 السعر: ' + state.price + '\n\nأرجو التأكيد وتفاصيل الدفع 🙏'
+        : 'Bonjour, je voudrais commander:\n\n🆔 N° de commande: ' + state.orderId + '\n👤 Nom: ' + fullName + '\n📞 Tél: ' + phone + '\n📍 Wilaya: ' + wilaya + '\n🎯 Service: ' + svcLabel + '\n🔗 Compte: ' + state.username + '\n📊 Quantité: ' + state.qty.toLocaleString() + '\n💰 Prix: ' + state.price + '\n\nMerci de confirmer et d\'envoyer les détails de paiement 🙏';
 
       // ── Push to backend(s) ──
       const saved = JSON.parse(localStorage.getItem('zidfollow_edits') || '{}');
@@ -3659,6 +3742,7 @@
       const waNum = saved['wa-number'] || '213776647176';
 
       const orderData = {
+        orderId: state.orderId,
         name: fullName,
         phone: phone,
         wilaya: wilaya,
@@ -3701,6 +3785,40 @@
       const ty = document.getElementById('thankyouPage');
       ty.classList.add('show');
       window.scrollTo(0, 0);
+
+      // Fill order confirmation card
+      const svcLabel = serviceLabels[state.lang][state.service] || state.service;
+      document.getElementById('tyOrderNumber').textContent = '#' + state.orderId;
+      document.getElementById('tyService').textContent = svcLabel;
+      document.getElementById('tyQty').textContent = state.qty ? state.qty.toLocaleString() : '—';
+      document.getElementById('tyPrice').textContent = state.price || '—';
+      const prefix = state.orderId.split('-')[0];
+      document.getElementById('tyTagline').textContent = state.lang === 'ar'
+        ? prefix + ' انفجار 🔥'
+        : prefix + ' exploser 🔥';
+
+      // Pre-filled WhatsApp support message
+      const waText = state.lang === 'ar'
+        ? 'السلام عليكم، أريد تأكيد طلبي:\n\n🆔 رقم الطلب: ' + state.orderId + '\n🎯 الخدمة: ' + svcLabel + '\n📊 الكمية: ' + (state.qty ? state.qty.toLocaleString() : '—') + '\n💰 السعر: ' + state.price + '\n\nهل طلبي مؤكد؟ 🙏'
+        : 'Bonjour, je voudrais confirmer ma commande:\n\n🆔 N° de commande: ' + state.orderId + '\n🎯 Service: ' + svcLabel + '\n📊 Quantité: ' + (state.qty ? state.qty.toLocaleString() : '—') + '\n💰 Prix: ' + state.price + '\n\nMa commande est-elle confirmée ? 🙏';
+      const saved = JSON.parse(localStorage.getItem('zidfollow_edits') || '{}');
+      const waNum = saved['wa-number'] || '213776647176';
+      document.getElementById('tyWaBtn').href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(waText);
+
+      // Meta Pixel Purchase event
+      try {
+        const priceNum = Number(String(state.price).replace(/[^\d.]/g, '')) || 0;
+        if (typeof fbq === 'function') {
+          fbq('track', 'Purchase', {
+            value: priceNum,
+            currency: 'DZD',
+            content_ids: [state.orderId],
+            content_name: svcLabel,
+            num_items: state.qty,
+            order_id: state.orderId
+          });
+        }
+      } catch (e) {}
     }
 
     function backToHome() {
