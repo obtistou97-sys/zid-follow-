@@ -1949,45 +1949,6 @@
       transform: translateY(0);
     }
 
-    /* ── Thank You page ── */
-    .thankyou {
-      min-height: 100vh;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .thankyou.show {
-      display: flex;
-    }
-
-    .ty-box {
-      max-width: 560px;
-    }
-
-    .ty-check {
-      font-size: 4rem;
-      margin-bottom: 1.5rem;
-      display: block;
-      animation: pop 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-    }
-
-    @keyframes pop {
-      0% {
-        transform: scale(0)
-      }
-
-      70% {
-        transform: scale(1.15)
-      }
-
-      100% {
-        transform: scale(1)
-      }
-    }
-
     /* ── Floating phone ── */
     @keyframes floatY {
       0%, 100% { transform: translateY(0); }
@@ -2010,64 +1971,6 @@
 
     .hero .btn-primary {
       animation: pulseGlow 2.5s ease-in-out infinite;
-    }
-
-    .ty-box h1 {
-      font-size: 2.2rem;
-      font-weight: 900;
-      margin-bottom: 0.75rem;
-    }
-
-    .ty-box p {
-      color: var(--text-secondary);
-      margin-bottom: 2rem;
-      font-size: 1.05rem;
-      line-height: 1.8;
-    }
-
-    .ty-tagline {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: var(--blue);
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.5px;
-    }
-
-    .ty-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.75rem 1.25rem;
-      margin-bottom: 1.75rem;
-      box-shadow: var(--shadow);
-    }
-
-    .ty-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.55rem 0;
-      border-bottom: 1px dashed var(--border);
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-    }
-
-    .ty-row:last-child {
-      border-bottom: none;
-    }
-
-    .ty-row strong,
-    .ty-row .ty-val {
-      font-weight: 800;
-      color: var(--text-primary);
-    }
-
-    .ty-order-no {
-      font-size: 1.05rem;
-      font-weight: 900;
-      color: var(--blue);
-      letter-spacing: 0.5px;
     }
 
     /* ── Responsive ── */
@@ -3442,53 +3345,6 @@
 
   </main>
 
-  <!-- THANK YOU PAGE -->
-  <div class="thankyou" id="thankyouPage">
-    <div class="ty-box">
-      <span class="ty-check">✅</span>
-      <h1 data-edit="ty-title" data-ar="تم تأكيد طلبك!" data-fr="Commande confirmée!">تم تأكيد طلبك!</h1>
-      <p id="tyTagline" class="ty-tagline" data-ar="🎉 شكراً!" data-fr="🎉 Merci!">🎉 شكراً!</p>
-      <div class="ty-card">
-        <div class="ty-row">
-          <span data-ar="رقم الطلب" data-fr="Numéro de commande">رقم الطلب</span>
-          <strong class="ty-order-no" id="tyOrderNumber">#—</strong>
-        </div>
-        <div class="ty-row">
-          <span data-ar="الحالة" data-fr="Statut">الحالة</span>
-          <span class="ty-val" data-ar="✅ مؤكد" data-fr="✅ Confirmé">✅ مؤكد</span>
-        </div>
-        <div class="ty-row">
-          <span data-ar="بدء التنفيذ" data-fr="Démarrage">بدء التنفيذ</span>
-          <span class="ty-val" data-ar="خلال ساعتين" data-fr="Dans 2 heures">خلال ساعتين</span>
-        </div>
-        <div class="ty-row">
-          <span data-ar="الخدمة" data-fr="Service">الخدمة</span>
-          <span class="ty-val" id="tyService">—</span>
-        </div>
-        <div class="ty-row">
-          <span data-ar="الكمية" data-fr="Quantité">الكمية</span>
-          <span class="ty-val" id="tyQty">—</span>
-        </div>
-        <div class="ty-row">
-          <span data-ar="السعر" data-fr="Prix">السعر</span>
-          <span class="ty-val" id="tyPrice">—</span>
-        </div>
-      </div>
-      <p data-edit="ty-desc" data-ar="تم استلام طلبك بنجاح! سيقوم فريقنا بتأكيد الطلب وبدء التنفيذ خلال ساعتين. 🚀"
-        data-fr="Votre commande est confirmée! Notre équipe va la valider et démarrer dans environ 2 heures. 🚀">
-        تم استلام طلبك بنجاح! سيقوم فريقنا بتأكيد الطلب وبدء التنفيذ خلال ساعتين. 🚀</p>
-      <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
-        <a href="#" onclick="backToHome()" class="btn-primary" style="display:inline-flex;text-decoration:none">
-          <span data-ar="← العودة للرئيسية" data-fr="← Retour à l'accueil">← العودة للرئيسية</span>
-        </a>
-        <a href="https://wa.me/213776647176" target="_blank" id="tyWaBtn" class="btn-primary" style="display:inline-flex;text-decoration:none;background:linear-gradient(135deg,#25D366,#128C7E);align-items:center;gap:0.5rem">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          <span data-ar="تواصل مع الدعم" data-fr="Contacter le support">تواصل مع الدعم</span>
-        </a>
-      </div>
-    </div>
-  </div>
-
   <script>
     // ── State ──
     const state = { service: '', username: '', qty: 0, price: '', lang: 'ar', theme: 'dark' };
@@ -3777,49 +3633,20 @@
       localStorage.setItem('zidfollow_orders', JSON.stringify(orders));
 
       localStorage.setItem('zidfollow_last_order', Date.now().toString());
-      showThankYou();
-    }
 
-    function showThankYou() {
-      document.getElementById('mainSite').style.display = 'none';
-      const ty = document.getElementById('thankyouPage');
-      ty.classList.add('show');
-      window.scrollTo(0, 0);
-
-      // Fill order confirmation card
-      const svcLabel = serviceLabels[state.lang][state.service] || state.service;
-      document.getElementById('tyOrderNumber').textContent = '#' + state.orderId;
-      document.getElementById('tyService').textContent = svcLabel;
-      document.getElementById('tyQty').textContent = state.qty ? state.qty.toLocaleString() : '—';
-      document.getElementById('tyPrice').textContent = state.price || '—';
-      // Pre-filled WhatsApp support message
-      const waText = state.lang === 'ar'
-        ? 'السلام عليكم، أريد تأكيد طلبي:\n\n🆔 رقم الطلب: ' + state.orderId + '\n🎯 الخدمة: ' + svcLabel + '\n📊 الكمية: ' + (state.qty ? state.qty.toLocaleString() : '—') + '\n💰 السعر: ' + state.price + '\n\nهل طلبي مؤكد؟ 🙏'
-        : 'Bonjour, je voudrais confirmer ma commande:\n\n🆔 N° de commande: ' + state.orderId + '\n🎯 Service: ' + svcLabel + '\n📊 Quantité: ' + (state.qty ? state.qty.toLocaleString() : '—') + '\n💰 Prix: ' + state.price + '\n\nMa commande est-elle confirmée ? 🙏';
-      const saved = JSON.parse(localStorage.getItem('zidfollow_edits') || '{}');
-      const waNum = saved['wa-number'] || '213776647176';
-      document.getElementById('tyWaBtn').href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(waText);
-
-      // Meta Pixel Purchase event
-      try {
-        const priceNum = Number(String(state.price).replace(/[^\d.]/g, '')) || 0;
-        if (typeof fbq === 'function') {
-          fbq('track', 'Purchase', {
-            value: priceNum,
-            currency: 'DZD',
-            content_ids: [state.orderId],
-            content_name: svcLabel,
-            num_items: state.qty,
-            order_id: state.orderId
-          });
-        }
-      } catch (e) {}
-    }
-
-    function backToHome() {
-      document.getElementById('mainSite').style.display = 'block';
-      document.getElementById('thankyouPage').classList.remove('show');
-      window.scrollTo(0, 0);
+      // Pass order summary to the thank-you page
+      sessionStorage.setItem('zidfollow_order', JSON.stringify({
+        orderId: state.orderId,
+        service: svcLabel,
+        qty: state.qty,
+        price: state.price,
+        lang: state.lang,
+        waNum: waNum,
+        fullName: fullName,
+        phone: phone,
+        wilaya: wilaya
+      }));
+      window.location.href = 'merci.html';
     }
 
     // ── FAQ toggle ──

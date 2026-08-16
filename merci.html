@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZidFollow - Commande confirmée</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&display=swap"
+    rel="stylesheet">
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1328700615877224');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1328700615877224&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
+  <style>
+    :root {
+      --blue: #9BABFA;
+      --yellow: #FAEA9B;
+      --blue-deep: #6b82f5;
+      --yellow-deep: #f0d84a;
+      --bg-dark: #332B55;
+      --bg-dark2: #26293f;
+      --bg-card-dark: #131629;
+      --bg-light: #f4f6ff;
+      --bg-light2: #ffffff;
+      --bg-card-light: #d9def8;
+      --text-dark-primary: #ffffff;
+      --text-dark-secondary: #b8c4f8;
+      --text-light-primary: #6555AA;
+      --text-light-secondary: #444d7a;
+      --wa: #25D366;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(155, 171, 250, 0.15);
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --bg2: var(--bg-dark2);
+      --bg-card: var(--bg-card-dark);
+      --text-primary: var(--text-dark-primary);
+      --text-secondary: var(--text-dark-secondary);
+      --border: rgba(155, 171, 250, 0.18);
+      --nav-bg: rgba(10, 12, 20, 0.92);
+    }
+
+    [data-theme="light"] {
+      --bg: var(--bg-light);
+      --bg2: var(--bg-light2);
+      --bg-card: var(--bg-card-light);
+      --text-primary: var(--text-light-primary);
+      --text-secondary: var(--text-light-secondary);
+      --border: rgba(107, 130, 245, 0.2);
+      --nav-bg: rgba(244, 246, 255, 0.94);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(155, 171, 250, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(155, 171, 250, 0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      to {
+        background-position: 60px 60px;
+      }
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, #F70F36, #c00a2b);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Cairo', sans-serif;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(247, 15, 54, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(247, 15, 54, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    .thankyou {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .ty-box {
+      max-width: 560px;
+    }
+
+    .ty-check {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      display: block;
+      animation: pop 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0)
+      }
+
+      70% {
+        transform: scale(1.15)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .ty-box h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 0.75rem;
+    }
+
+    .ty-box p {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .ty-tagline {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--blue);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .ty-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+
+    .ty-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .ty-row:last-child {
+      border-bottom: none;
+    }
+
+    .ty-row strong,
+    .ty-row .ty-val {
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .ty-order-no {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+
+<body data-theme="dark" data-lang="ar">
+
+  <div class="thankyou">
+    <div class="ty-box">
+      <span class="ty-check">✅</span>
+      <h1 data-edit="ty-title" data-ar="تم تأكيد طلبك!" data-fr="Commande confirmée!">تم تأكيد طلبك!</h1>
+      <p id="tyTagline" class="ty-tagline" data-ar="🎉 شكراً!" data-fr="🎉 Merci!">🎉 شكراً!</p>
+      <div class="ty-card">
+        <div class="ty-row">
+          <span data-ar="رقم الطلب" data-fr="Numéro de commande">رقم الطلب</span>
+          <strong class="ty-order-no" id="tyOrderNumber">#—</strong>
+        </div>
+        <div class="ty-row">
+          <span data-ar="الحالة" data-fr="Statut">الحالة</span>
+          <span class="ty-val" data-ar="✅ مؤكد" data-fr="✅ Confirmé">✅ مؤكد</span>
+        </div>
+        <div class="ty-row">
+          <span data-ar="بدء التنفيذ" data-fr="Démarrage">بدء التنفيذ</span>
+          <span class="ty-val" data-ar="خلال ساعتين" data-fr="Dans 2 heures">خلال ساعتين</span>
+        </div>
+        <div class="ty-row">
+          <span data-ar="الخدمة" data-fr="Service">الخدمة</span>
+          <span class="ty-val" id="tyService">—</span>
+        </div>
+        <div class="ty-row">
+          <span data-ar="الكمية" data-fr="Quantité">الكمية</span>
+          <span class="ty-val" id="tyQty">—</span>
+        </div>
+        <div class="ty-row">
+          <span data-ar="السعر" data-fr="Prix">السعر</span>
+          <span class="ty-val" id="tyPrice">—</span>
+        </div>
+      </div>
+      <p data-edit="ty-desc" data-ar="تم استلام طلبك بنجاح! سيقوم فريقنا بتأكيد الطلب وبدء التنفيذ خلال ساعتين. 🚀"
+        data-fr="Votre commande est confirmée! Notre équipe va la valider et démarrer dans environ 2 heures. 🚀">
+        تم استلام طلبك بنجاح! سيقوم فريقنا بتأكيد الطلب وبدء التنفيذ خلال ساعتين. 🚀</p>
+      <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+        <a href="index.html" class="btn-primary" style="display:inline-flex;text-decoration:none">
+          <span data-ar="← العودة للرئيسية" data-fr="← Retour à l'accueil">← العودة للرئيسية</span>
+        </a>
+        <a href="https://wa.me/213776647176" target="_blank" id="tyWaBtn" class="btn-primary" style="display:inline-flex;text-decoration:none;background:linear-gradient(135deg,#25D366,#128C7E);align-items:center;gap:0.5rem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span data-ar="تواصل مع الدعم" data-fr="Contacter le support">تواصل مع الدعم</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = { lang: 'ar', theme: 'dark' };
+
+    function applyLang(l) {
+      state.lang = l === 'fr' ? 'fr' : 'ar';
+      document.body.setAttribute('data-lang', state.lang);
+      document.documentElement.setAttribute('lang', state.lang);
+      document.documentElement.setAttribute('dir', state.lang === 'ar' ? 'rtl' : 'ltr');
+      document.querySelectorAll('[data-ar]').forEach(el => {
+        el.textContent = el.getAttribute('data-' + state.lang);
+      });
+    }
+
+    function fillOrder(data) {
+      if (!data) return;
+      document.getElementById('tyOrderNumber').textContent = '#' + data.orderId;
+      document.getElementById('tyService').textContent = data.service || '—';
+      document.getElementById('tyQty').textContent = Number(data.qty || 0).toLocaleString();
+      document.getElementById('tyPrice').textContent = data.price || '—';
+
+      const waNum = data.waNum || '213776647176';
+      const qtyTxt = Number(data.qty || 0).toLocaleString();
+      const waText = state.lang === 'ar'
+        ? 'السلام عليكم، أريد تأكيد طلبي:\n\n🆔 رقم الطلب: ' + data.orderId + '\n🎯 الخدمة: ' + data.service + '\n📊 الكمية: ' + qtyTxt + '\n💰 السعر: ' + data.price + '\n\nهل طلبي مؤكد؟ 🙏'
+        : 'Bonjour, je voudrais confirmer ma commande:\n\n🆔 N° de commande: ' + data.orderId + '\n🎯 Service: ' + data.service + '\n📊 Quantité: ' + qtyTxt + '\n💰 Prix: ' + data.price + '\n\nMa commande est-elle confirmée ? 🙏';
+      document.getElementById('tyWaBtn').href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(waText);
+
+      const nameParts = String(data.fullName || '').trim().split(/\s+/);
+      const fn = nameParts[0] || '';
+      const ln = nameParts.slice(1).join(' ') || '';
+
+      try {
+        const priceNum = Number(String(data.price).replace(/[^\d.]/g, '')) || 0;
+        if (typeof fbq === 'function') {
+          fbq('track', 'Purchase', {
+            value: priceNum,
+            currency: 'DZD',
+            content_ids: [data.orderId],
+            content_name: data.service,
+            num_items: data.qty,
+            order_id: data.orderId,
+            fn: fn,
+            ln: ln,
+            ph: data.phone || '',
+            ct: data.wilaya || ''
+          });
+        }
+      } catch (e) {}
+    }
+
+    (function init() {
+      let data = null;
+      try { data = JSON.parse(sessionStorage.getItem('zidfollow_order') || 'null'); } catch (e) { data = null; }
+      sessionStorage.removeItem('zidfollow_order');
+      if (data && data.lang) applyLang(data.lang);
+      fillOrder(data);
+    })();
+  </script>
+</body>
+
+</html>
